@@ -1,32 +1,19 @@
-import type { BooksApiResponse } from "@/interfaces/book/book-types";
+import type { IBorrow } from "@/interfaces/borrow/borrow-types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-interface GetBooksParams {
-  filter?: string;
-  sortBy?: string;
-  limit?: number;
-}
 
 export const borrowApi = createApi({
   reducerPath: "borrowApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api" }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: "http://localhost:5001/api",
+    credentials: "include",
+  }),
   endpoints: (builder) => ({
-    // getBooks: builder.query<BooksApiResponse, GetBooksParams | void>({
-    //   query: (params) => {
-    //     if (!params) return { url: "/books/" };
-
-    //     const queryParams: Record<string, string> = {};
-    //     if (params.filter) queryParams.filter = params.filter;
-    //     if (params.sortBy) queryParams.sortBy = params.sortBy;
-    //     if (params.limit !== undefined)
-    //       queryParams.limit = String(params.limit);
-
-    //     return {
-    //       url: "/books/",
-    //       params: queryParams,
-    //     };
-    //   },
-    // }),
+    getBorrowSummary: builder.query<IBorrow,number>({
+      query: (pageLimit) => ({
+        url: `/borrow?pageLimit=${pageLimit}`,
+        method: "GET",
+      }),
+    }),
     borrowBook: builder.mutation({
       query: (borrowData) => ({
         url: `/borrow/`,
@@ -37,4 +24,4 @@ export const borrowApi = createApi({
   }),
 });
 
-export const { useBorrowBookMutation } = borrowApi;
+export const { useBorrowBookMutation, useGetBorrowSummaryQuery } = borrowApi;

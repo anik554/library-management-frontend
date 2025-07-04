@@ -23,8 +23,13 @@ const AddBook = () => {
   const form = useForm();
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     console.log(data);
+    const addBookData ={
+      ...data,
+      copies: Number(data.copies),
+      available: true
+    }
     form.reset();
-    const res = await createBook(data).unwrap();
+    const res = await createBook(addBookData).unwrap();
     if (res.success) {
       toast.success("Create Book Successfully");
       navigate("/allbooks")

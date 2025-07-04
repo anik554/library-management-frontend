@@ -3,13 +3,12 @@ import { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ChevronDownIcon, ImageUpscale, Pencil, Trash2 } from "lucide-react";
+import { ChevronDownIcon, Eye, ImageUpscale, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -36,6 +35,11 @@ import type { Book } from "@/interfaces/book/book-types";
 import { BookUpdateModal } from "@/components/models/BookUpdateModal";
 import { AlertDialogModal } from "@/components/models/AlertDialogModal";
 import { BorrowBookModal } from "@/components/models/BorrowBookModal";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface IFilterData {
   genre: string;
@@ -47,10 +51,11 @@ const AllBooks = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [openBook, setOpenBook] = useState(false);
+  const [openBookView, setOpenBookView] = useState(false);
   const [openBookDelete, setOpenBookDelete] = useState(false);
   const [openBookBorrow, setOpenBookBorrow] = useState(false);
-  const [bookId,setBookId]=useState({id:"",quentity:""})
-  const [bookValue, setBookValue]=useState<Book | null>(null)
+  const [bookId, setBookId] = useState({ id: "", quentity: "" });
+  const [bookValue, setBookValue] = useState<Book | null>(null);
   const [filterData, setFilterData] = useState<IFilterData>({
     genre: "",
     date: undefined,
@@ -73,22 +78,31 @@ const AllBooks = () => {
 
   const handleOpen = (bookData: Book) => {
     setOpenBook(true);
-    setBookValue(bookData)
+    setBookValue(bookData);
   };
+  const handleOpenView = (bookData: Book) => {
+    setOpenBookView(true);
+    setBookValue(bookData);
+  };
+  const handleViewClose = () => {
+    setOpenBookView(false);
+    setBookValue(null);
+  };
+
   const handleClose = () => {
     setOpenBook(false);
-    setBookValue(null)
+    setBookValue(null);
   };
 
   const handleOpenDelete = (id: string) => {
-    setBookId({id: id,quentity:""})
+    setBookId({ id: id, quentity: "" });
     setOpenBookDelete(true);
   };
   const handleCloseDelete = () => {
     setOpenBookDelete(false);
   };
-  const handleOpenBorrow = (id: string, quantity:number) => {
-    setBookId({id: id, quentity:String(quantity)})
+  const handleOpenBorrow = (id: string, quantity: number) => {
+    setBookId({ id: id, quentity: String(quantity) });
     setOpenBookBorrow(true);
   };
   const handleCloseBorrow = () => {
@@ -115,7 +129,8 @@ const AllBooks = () => {
   }
 
   if (isError) {
-    return console.log(isError);
+    console.error(isError);
+    return <p className="text-red-500">Failed to load books.</p>;
   }
 
   return (
@@ -173,10 +188,10 @@ const AllBooks = () => {
       {isLoading ? (
         <p>Loading...</p>
       ) : (
-        <Table>
-          <TableHeader>
+        <Table className="border-1 mt-2">
+          <TableHeader className="bg-muted">
             <TableRow>
-              <TableHead className="w-[100px]">Title</TableHead>
+              <TableHead>Title</TableHead>
               <TableHead>Author</TableHead>
               <TableHead>Genre</TableHead>
               <TableHead>ISBN</TableHead>
@@ -219,18 +234,60 @@ const AllBooks = () => {
                   </TableCell>
                   <TableCell className="text-right">
                     <div>
-                      <Button
-                        variant={"link"}
-                        onClick={() => handleOpen(bookData)}
-                      >
-                        <Pencil color="green" />
-                      </Button>
-                      <Button variant={"link"} onClick={() => handleOpenDelete(bookData._id)}>
-                        <Trash2 color="red" />
-                      </Button>
-                      <Button variant={"link"} onClick={() => handleOpenBorrow(bookData._id, bookData.copies)}>
-                        <ImageUpscale color="red" />
-                      </Button>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Button
+                            variant={"link"}
+                            onClick={() => handleOpenView(bookData)}
+                          >
+                            <Eye className="text-sky-700" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>View</p>
+                        </TooltipContent>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Button
+                            variant={"link"}
+                            onClick={() => handleOpen(bookData)}
+                          >
+                            <Pencil color="green" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Update Book</p>
+                        </TooltipContent>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Button
+                            variant={"link"}
+                            onClick={() => handleOpenDelete(bookData._id)}
+                          >
+                            <Trash2 color="red" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Delete Book</p>
+                        </TooltipContent>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Button
+                            variant={"link"}
+                            onClick={() =>
+                              handleOpenBorrow(bookData._id, bookData.copies)
+                            }
+                          >
+                            <ImageUpscale color="blue" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Borrow Book</p>
+                        </TooltipContent>
+                      </Tooltip>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -240,7 +297,7 @@ const AllBooks = () => {
         </Table>
       )}
       <Pagination>
-        <PaginationContent>
+        <PaginationContent className="ml-auto mt-2">
           <PaginationItem>
             <div className="flex items-center gap-2">
               <span>Rows per page:</span>
@@ -291,13 +348,25 @@ const AllBooks = () => {
         </PaginationContent>
       </Pagination>
       {openBook && (
-        <BookUpdateModal bookValue={bookValue} onclose={handleClose} refetch={refetch}/>
+        <BookUpdateModal
+          bookValue={bookValue}
+          onclose={handleClose}
+          refetch={refetch}
+        />
       )}
       {openBookDelete && (
-        <AlertDialogModal bookId={bookId.id} onclose={handleCloseDelete} refetch={refetch}/>
+        <AlertDialogModal
+          bookId={bookId.id}
+          onclose={handleCloseDelete}
+          refetch={refetch}
+        />
       )}
       {openBookBorrow && (
-        <BorrowBookModal borrowValue={bookId} onclose={handleCloseBorrow} refetch={refetch} />
+        <BorrowBookModal
+          borrowValue={bookId}
+          onclose={handleCloseBorrow}
+          refetch={refetch}
+        />
       )}
     </div>
   );

@@ -10,9 +10,9 @@ const Navbar = () => {
         <img src={Logo} width={70} height={70} />
       </div>
       <div className="ml-auto flex items-center gap-5">
-        <Link to={"allbooks"}>All Books</Link>
-        <Link to={"addbook"}>Add Book</Link>
-        <Link to={""}>Borrow Summary</Link>
+        <Link to={"books"}>All Books</Link>
+        <Link to={"create-book"}>Add Book</Link>
+        <Link to={"borrow-summary"}>Borrow Summary</Link>
         <ModeToggle />
       </div>
     </div>

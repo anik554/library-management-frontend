@@ -54,11 +54,12 @@ export function BookUpdateModal({ bookValue, onclose, refetch }: IBookData) {
       copies: Number(data.copies),
     };
     form.reset();
-    const res = await updatebook(updateData);
+    const res = await updatebook(updateData).unwrap();
     if (res) {
       onclose();
       refetch();
       toast.success("Update Book Successfully");
+      form.reset();
     } else {
       toast.error("Faild to Update Book");
     }
