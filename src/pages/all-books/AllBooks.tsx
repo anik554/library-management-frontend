@@ -40,6 +40,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import ViewBookInfo from "@/components/models/ViewBookInfo";
 
 interface IFilterData {
   genre: string;
@@ -367,6 +368,9 @@ const AllBooks = () => {
           onclose={handleCloseBorrow}
           refetch={refetch}
         />
+      )}
+      {openBookView && (
+        <ViewBookInfo bookValue={bookValue} onclose={handleViewClose} />
       )}
     </div>
   );
