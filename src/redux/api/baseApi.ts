@@ -9,7 +9,7 @@ interface GetBooksParams {
 
 export const baseApi = createApi({
   reducerPath: "baseApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5001/api" , credentials: "include"}),
+  baseQuery: fetchBaseQuery({ baseUrl: "https://library-management-backend-liart.vercel.app/api" , credentials: "include"}),
   endpoints: (builder) => ({
     getBooks: builder.query<BooksApiResponse, GetBooksParams | void>({
       query: (params) => {
